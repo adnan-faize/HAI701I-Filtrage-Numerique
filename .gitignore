@@ -1,3 +1,9 @@
+build/
+.cache/
+out/
+bin/
+_old/
+
 # Prerequisites
 *.d
 
