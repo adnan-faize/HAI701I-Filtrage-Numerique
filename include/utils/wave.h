@@ -33,6 +33,7 @@ typedef struct {
 extern wave* create_wave(wave* wav);
 extern wave* create_wave_u8(wave* wav, uint8_t* data_8, size_t data_nb, int16_t channels_nb, int32_t sampling_freq);
 extern wave* create_wave_i16(wave* wav, int16_t* data_16, size_t data_nb, int16_t channels_nb, int32_t sampling_freq);
+extern void destroy_wave(wave* wav);
 
 extern uint8_t** wave_get_data_u8();
 extern int16_t** wave_get_data_i16();

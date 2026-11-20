@@ -6,25 +6,24 @@
 
 #include "shared/config.h"
 #include "commands/la.h"
+#include "commands/analyse.h"
+#include "commands/lamin.h"
+#include "commands/gamme.h"
 
 struct command {
     char* name;
     int (*fn)(const struct config*);
 };
 
-int run_all_command(const struct config *cfg) {
-    int result = 0;
-    result += run_la_command(cfg);
-    return result;
-}
-
 const struct command commands[] = {
-    { "la" , run_la_command  },
-    { "all", run_all_command },
+    { "la"   , run_la_command    },
+    { "analyse"   , run_analyse_command    },
+    { "lamin"   , run_lamin_command    },
+    { "gamme", run_gamme_command },
     { NULL , NULL }
 };
 
-const char* short_options = "h";
+const char* short_options = "o:h";
 const struct option long_options[] = {
     { "output", required_argument, NULL, 'o'},
     { "help"  , no_argument      , NULL, 'h'},
@@ -32,7 +31,7 @@ const struct option long_options[] = {
 };
 
 void help() {
-    printf("help.");
+    printf("help.\n");
 }
 
 int main(int argc, char** argv) {
@@ -57,13 +56,15 @@ int main(int argc, char** argv) {
     }
 
     // no command given or only --help
-    if (optind >= argc) { help(); return want_help ? EXIT_SUCCESS : EXIT_FAILURE; }
+    if (optind >= argc || argv[optind] == NULL || want_help) {
+        help();
+        return want_help ? EXIT_SUCCESS : EXIT_FAILURE;
+    }
 
-    char* command_name = argv[optind];
+    const char* command_name = argv[optind];
     size_t i = 0;
-    struct command command = commands[i];
-    while (command.name != NULL || strcmp(command.name, command_name) != 0) { i++; }
-    if (command.name != NULL) { return command.fn(&cfg); }
+    while (commands[i].name != NULL && strcmp(commands[i].name, command_name) != 0) { i++; }
+    if (commands[i].name != NULL && commands[i].fn != NULL) { return commands[i].fn(&cfg); }
 
     fprintf(stderr, "Error : unknown command '%s'.\n", command_name);
     help();
